@@ -27,3 +27,37 @@ function Cell() {
 
     return {getValue, changeValue};
 }
+
+function Game() {
+    const gameboard = Gameboard();
+    const players = [
+        {token: 'X'},
+        {token: 'O'}
+    ];
+    let activePlayer = players[0];
+    const getActivePlayer = () => activePlayer;
+    const switchActivePlayer = () => {
+        activePlayer = players[0] ? players[1] : players[0];
+    }
+    const playRound = () => {
+        gameboard.dropToken(getActivePlayer(), getPosition());
+        switchActivePlayer();
+    }
+    return {getBoard: gameboard.getBoard, getActivePlayer, playRound};
+}
+
+function screenController() {
+    const game = Game();
+    const messageDiv = document.querySelector('.message');
+    const boardDiv = document.querySelector('.board');
+    const updateScreen = () => {
+        const board = game.getBoard();
+        const activePlayer = game.getActivePlayer();
+        messageDiv.textContent = '${activePlayer.token} Turn';
+        board.forEach(row => forEach((cell, index) => {
+            const cellButton = document.createElement('button');
+            cellButton.classList.add('cell');
+            
+        }))
+    }
+}
