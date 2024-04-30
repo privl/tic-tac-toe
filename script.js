@@ -23,7 +23,7 @@ function Gameboard() {
 function Cell() {
     let value = '';
     const getValue = () => value;
-    const changeValue = (player) => value = player.getToken();
+    const changeValue = (player) => value = player.token;
 
     return {getValue, changeValue};
 }
@@ -54,10 +54,15 @@ function screenController() {
         const board = game.getBoard();
         const activePlayer = game.getActivePlayer();
         messageDiv.textContent = '${activePlayer.token} Turn';
-        board.forEach(row => forEach((cell, index) => {
+        board.forEach((row, rowIndex) => {
+            row.forEach((cell, columnIndex) => {
             const cellButton = document.createElement('button');
             cellButton.classList.add('cell');
-            
-        }))
+            cellButton.dataset.row = rowIndex;
+            cellButton.dataset.column = columnIndex;
+            cellButton.textContent = cell.getValue();
+            boardDiv.append(cellButton);
+            })
+        })
     }
 }
