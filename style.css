@@ -1,0 +1,11 @@
+.board {
+    width: 600px;
+    height: 600px;
+    display: grid;
+    grid-template-rows: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.cell {
+    background-color: azure;
+}
