@@ -54,6 +54,7 @@ function screenController() {
     const messageDiv = document.querySelector('.message');
     const boardDiv = document.querySelector('.board');
     const updateScreen = () => {
+        boardDiv.replaceChildren();
         const board = game.getBoard();
         const activePlayer = game.getActivePlayer();
         messageDiv.textContent = activePlayer.token +`'s Turn`;
@@ -64,7 +65,11 @@ function screenController() {
             cellButton.dataset.row = rowIndex;
             cellButton.dataset.column = columnIndex;
             cellButton.textContent = cell.getValue();
-            cellButton.addEventListener('click', )
+            cellButton.addEventListener('click', () => {
+                game.playRound(cell.getPosition());
+                }
+            );
+            cellButton.addEventListener('click', updateScreen);
             boardDiv.append(cellButton);
             })
         })
