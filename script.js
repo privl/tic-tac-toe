@@ -40,12 +40,45 @@ function Game() {
     let activePlayer = players[0];
     const getActivePlayer = () => activePlayer;
     const switchActivePlayer = () => {
-        activePlayer = players[0] ? players[1] : players[0];
+        activePlayer = activePlayer === players[0] ? players[1] : players[0];
     }
+    let turn = 1;
+    let X = 0;
+    let O = 0;
     const playRound = (position) => {
         gameboard.dropToken(getActivePlayer(), position);
+        let winner = referee();
+        if (winner && turn <= 3) {
+            winner = 'X' ? X++ : O++;
+            turn++;
+            return {X, O};
+        }
         switchActivePlayer();
     }
+    const referee = () => {
+        const board = gameboard.getBoard();
+        const lines = [
+            // Rows
+            [board[0][0], board[0][1], board[0][2]],
+            [board[1][0], board[1][1], board[1][2]],
+            [board[2][0], board[2][1], board[2][2]],
+            // Columns
+            [board[0][0], board[1][0], board[2][0]],
+            [board[0][1], board[1][1], board[2][1]],
+            [board[0][2], board[1][2], board[2][2]],
+            // Diagonals
+            [board[0][0], board[1][1], board[2][2]],
+            [board[2][0], board[1][1], board[0][2]]
+        ];
+        for (const line of lines) {
+            const [a, b, c] = line;
+            if (a.getValue() === b.getValue() && b.getValue() === c.getValue()){
+                return a.getValue();
+            }
+            return null;
+        }
+    }
+
     return {getBoard: gameboard.getBoard, getActivePlayer, playRound};
 }
 
@@ -53,23 +86,31 @@ function screenController() {
     const game = Game();
     const messageDiv = document.querySelector('.message');
     const boardDiv = document.querySelector('.board');
+    let scores = {X:0, O:0};
+    let winner = null;
     const updateScreen = () => {
         boardDiv.replaceChildren();
         const board = game.getBoard();
         const activePlayer = game.getActivePlayer();
-        messageDiv.textContent = activePlayer.token +`'s Turn`;
-        board.forEach((row, rowIndex) => {
-            row.forEach((cell, columnIndex) => {
+        if (scores.X === 3) winner = 'X';
+        if (scores.O === 3) winner = 'O';
+        if (!winner) {
+            messageDiv.textContent = activePlayer.token +`'s Turn `+
+                "X:" + scores.X + "  O:" + scores.O;
+        } else {
+            messageDiv.textContent = winner + " WINS!";
+            scores = {X:0, O:0};
+        }
+        board.forEach(row => {
+            row.forEach(cell => {
             const cellButton = document.createElement('button');
             cellButton.classList.add('cell');
-            cellButton.dataset.row = rowIndex;
-            cellButton.dataset.column = columnIndex;
             cellButton.textContent = cell.getValue();
             cellButton.addEventListener('click', () => {
-                game.playRound(cell.getPosition());
+                scores = game.playRound(cell.getPosition());
+                updateScreen();
                 }
             );
-            cellButton.addEventListener('click', updateScreen);
             boardDiv.append(cellButton);
             })
         })
