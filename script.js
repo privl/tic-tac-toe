@@ -55,7 +55,13 @@ function Game() {
                     cell.clearValue();
                 });
             });
-        } else if (wasDropped) {
+        } else if (roundWinner === "tie") {
+            gameboard.getBoard().forEach(row => {
+                row.forEach(cell => {
+                    cell.clearValue();
+                });
+            });
+        }else if (wasDropped) {
             switchActivePlayer();
         }
         return {roundWinner, scores};
@@ -85,7 +91,7 @@ function Game() {
         }
 
         const full = function() {
-            return gameboard.getBoard().every(row => row.every(cell => cell.getValue() !== ''));
+            return gameboard.getBoard().every(row => row.every(cell => cell.getValue() !== null));
         };
         if (full()) return "tie";
         return null;
@@ -113,17 +119,18 @@ function screenController() {
             messageDiv.textContent = winner + " WINS!";
             scores = {X: 0, O: 0};
         }
+
         board.forEach(row => {
             row.forEach(cell => {
                 const cellButton = document.createElement('button');
                 cellButton.classList.add('cell');
                 cellButton.textContent = cell.getValue();
                 cellButton.addEventListener('click', () => {
-                    scores = game.playRound(cell.getPosition()).scores;
-                    let roundWinner = game.playRound(cell.getPosition()).roundWinner;
+                    let result = game.playRound(cell.getPosition());
+                    scores = result.scores;
+                    let roundWinner = result.roundWinner; 
                     updateScreen();
-                    }
-                );
+                });
                 boardDiv.append(cellButton);
             });
         });
